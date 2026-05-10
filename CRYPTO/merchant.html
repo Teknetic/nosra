@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>nosra-x · Merchant Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:radial-gradient(circle at 10% 20%,#0a0f1e,#03060c);color:#eef2ff;min-height:100vh;line-height:1.5;}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 1.4rem 4rem;}
+    .glass{background:rgba(15,25,45,0.65);backdrop-filter:blur(14px);border:1px solid rgba(0,255,255,0.18);border-radius:1.8rem;box-shadow:0 18px 32px -10px rgba(0,0,0,0.5);}
+    .panel{background:rgba(8,15,30,0.7);border-radius:1.3rem;border:1px solid #1e2d4a;padding:1.2rem;}
+    .btn-glow{background:linear-gradient(95deg,#00c6a7,#00b0f0);border:none;padding:0.7rem 1.4rem;border-radius:2.5rem;font-weight:700;color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:0.9rem;}
+    .btn-glow:hover{transform:translateY(-2px);box-shadow:0 8px 22px -6px #00c6a770;}
+    .btn-glow.full{width:100%;justify-content:center;padding:0.8rem;}
+    .btn-ghost{background:transparent;border:1.5px solid #4c9aff;border-radius:2.5rem;padding:0.5rem 1.1rem;color:#caf0ff;cursor:pointer;font-size:0.82rem;display:inline-flex;align-items:center;gap:7px;}
+    .btn-ghost:hover{background:rgba(76,154,255,0.1);}
+    .btn-danger{background:linear-gradient(95deg,#e53e3e,#c05621);border:none;padding:6px 14px;border-radius:2.5rem;font-weight:600;color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:0.82rem;}
+    .btn-sm{padding:5px 12px!important;font-size:0.8rem!important;}
+    .field{width:100%;padding:10px 14px;border-radius:2rem;background:#0c1626;color:#fff;border:1.5px solid #2b3b6e;outline:none;font-size:0.88rem;font-family:inherit;transition:border-color .2s;}
+    .field:focus{border-color:#2effd2;}
+    .label{font-size:0.78rem;color:#64748b;display:block;margin-bottom:4px;}
+    .vault-card{background:#050d1b;border-radius:1rem;padding:0.9rem 1rem;margin-bottom:0.8rem;border:1px solid #1e2d4a;}
+    .badge{display:inline-block;background:#162035;color:#7ae9ff;border-radius:20px;padding:2px 10px;font-size:0.72rem;font-weight:700;}
+    .stat-card{background:#080f1e;border-radius:1.1rem;padding:1rem 1.2rem;text-align:center;border:1px solid #1e2d4a;}
+    .stat-num{font-size:2rem;font-weight:800;line-height:1;}
+    .stat-lbl{font-size:0.75rem;color:#64748b;margin-top:4px;}
+    .proof-box{background:#030810;border-radius:9px;overflow:hidden;margin-top:8px;border:1px solid #111d32;}
+    .proof-row{display:flex;gap:10px;padding:8px 11px;align-items:flex-start;border-bottom:1px solid #0e1a2e;}
+    .proof-row:last-child{border-bottom:none;}
+    .proof-icon{font-size:1.1rem;flex-shrink:0;}
+    .proof-body{flex:1;min-width:0;}
+    .proof-label{font-size:0.77rem;font-weight:700;}
+    .proof-thumb{max-width:100%;max-height:110px;border-radius:7px;margin-top:5px;border:1px solid #1e2d4a;cursor:pointer;display:block;}
+    .chat-log{height:260px;overflow-y:auto;background:rgba(0,0,0,0.5);border-radius:1rem;padding:0.9rem;font-size:0.8rem;}
+    .msg{margin-bottom:0.45rem;border-left:2px solid #2effd2;padding-left:0.6rem;color:#94a3b8;}
+    .section-title{font-size:1rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+    .empty-chip{background:#0f172ad9;border-radius:40px;padding:0.3rem 1rem;display:inline-block;font-size:0.8rem;color:#64748b;}
+    #lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out;}
+    #lightbox.open{display:flex;}
+    #lightbox img{max-width:92vw;max-height:92vh;border-radius:1rem;}
+    .toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:10px 18px;border-radius:1rem;font-weight:600;font-size:0.85rem;z-index:8888;opacity:0;transition:opacity .3s;pointer-events:none;}
+    .toast.ok{background:#0a1f14;border:1.5px solid #2effd2;color:#2effd2;}
+    .toast.err{background:#200a0a;border:1.5px solid #f87171;color:#f87171;}
+    .toast.show{opacity:1;}
+    .c-green{color:#2effd2;} .c-blue{color:#7ae9ff;} .c-amber{color:#ffe484;} .c-mute{color:#64748b;} .c-red{color:#f87171;} .c-purple{color:#a78bfa;}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;}
+    .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;}
+    footer{text-align:center;font-size:0.78rem;color:#3a4a6a;padding:2rem 0;}
+    @media(max-width:720px){.grid2{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+<div id="lightbox" onclick="this.classList.remove('open')"><img id="lbImg" src="" alt=""></div>
+<div id="toast" class="toast"></div>
+
+<div class="wrap">
+
+  <!-- ── Header ── -->
+  <header style="display:flex;justify-content:space-between;align-items:center;padding:1.6rem 0 2rem;flex-wrap:wrap;gap:1rem;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <i class="fas fa-cube" style="font-size:1.5rem;color:#2effd2;"></i>
+      <div>
+        <span style="font-weight:800;font-size:1.4rem;">nosra<span class="c-green">-x</span></span>
+        <span style="font-size:0.78rem;color:#64748b;margin-left:8px;">Merchant Dashboard</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div id="mWalletBadge" style="background:#0c1626;border:1px solid #2b3b6e;border-radius:2rem;padding:6px 14px;font-size:0.8rem;" class="c-mute">⚙️ Wallet not set</div>
+      <a href="index.html" class="btn-ghost"><i class="fas fa-arrow-left"></i> Buyer page</a>
+    </div>
+  </header>
+
+  <!-- ── Wallet setup ── -->
+  <div class="glass" style="padding:1.4rem 1.6rem;margin-bottom:1.8rem;">
+    <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;">
+        <span class="label">Your crypto wallet address <span style="color:#334155;">(crypto locked from here, refunds return here)</span></span>
+        <input id="mWalletInput" type="text" placeholder="0x… or your wallet address" class="field"
+          onkeydown="if(event.key==='Enter') saveMWallet();">
+      </div>
+      <button class="btn-glow" onclick="saveMWallet()" style="white-space:nowrap;"><i class="fas fa-save"></i> Save wallet</button>
+    </div>
+  </div>
+
+  <!-- ── Stats bar ── -->
+  <div id="statsBar" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;margin-bottom:1.8rem;"></div>
+
+  <!-- ── Main grid ── -->
+  <div class="grid2" style="margin-bottom:1.8rem;">
+
+    <!-- LEFT: Pending + Active -->
+    <div>
+      <!-- Pending requests (step 2 — lock) -->
+      <div class="panel" style="margin-bottom:1.4rem;">
+        <div class="section-title"><i class="fas fa-lock" style="color:#4c9aff;"></i> Step ② — Lock Crypto</div>
+        <div id="pendingList"><span class="empty-chip">No pending requests</span></div>
+      </div>
+
+      <!-- Active vaults (step 4 — confirm) -->
+      <div class="panel">
+        <div class="section-title"><i class="fas fa-mobile-alt" style="color:#2effd2;"></i> Step ④ — Confirm MMG Payment</div>
+        <p style="font-size:0.8rem;margin-bottom:1rem;" class="c-mute">Check your MMG account for the buyer's payment, then upload your confirmation screenshot. When both sides upload, crypto auto-releases in 30 min.</p>
+        <div id="activeList"><span class="empty-chip">No active vaults</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Log + History -->
+    <div>
+      <!-- Transaction log -->
+      <div class="panel" style="margin-bottom:1.4rem;">
+        <div class="section-title"><i class="fas fa-list" style="color:#7ae9ff;"></i> Transaction Log</div>
+        <div id="chatLog" class="chat-log"></div>
+        <button class="btn-ghost" onclick="clearAll()" style="width:100%;justify-content:center;margin-top:1rem;border-color:#7f1d1d;color:#f87171;">
+          <i class="fas fa-trash-alt"></i> Reset &amp; Clear All Data
+        </button>
+      </div>
+
+      <!-- Completed history -->
+      <div class="panel">
+        <div class="section-title"><i class="fas fa-history" style="color:#a78bfa;"></i> Completed Trades</div>
+        <div id="historyList"><span class="empty-chip">No completed trades yet</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>© 2025 nosra-x · Merchant Dashboard · Vault auto-releases 30 min after both MMG screenshots confirmed</footer>
+</div>
+
+<script>
+'use strict';
+
+/* ── Firebase init ── */
+firebase.initializeApp(window.FIREBASE_CONFIG);
+const db = firebase.database();
+const SK_MWALLET = 'nx_mwallet';
+const RELEASE_MS = 30 * 60 * 1000;
+const REFUND_MS  = 30 * 60 * 1000;
+const INCOMPLETE = ['locked','buyer_proved','merchant_proved'];
+
+const SL = {
+  pending:         '⏳ Pending',
+  locked:          '🔒 Locked — waiting buyer',
+  buyer_proved:    '📤 Buyer receipt in',
+  merchant_proved: '📥 You confirmed — waiting buyer',
+  dual_confirmed:  '✅ Both confirmed',
+  released:        '🎉 Released',
+  refunded:        '↩️ Refunded'
+};
+
+/* ── state ── */
+let vaults      = [];
+let screenshots = {};   // id+'_merchant' → base64 (buyer's are on buyer's device)
+let chatLines   = [];
+let mWallet     = '';
+
+/* ── Firebase write helpers ── */
+function saveVault(v) {
+  db.ref('vaults/' + v.id).set(v);
+}
+function log(msg) {
+  const entry = '📋 [' + new Date().toLocaleTimeString() + '] ' + msg;
+  db.ref('chat').once('value').then(snap => {
+    const current = snap.val() || [];
+    db.ref('chat').set([entry, ...current].slice(0, 120));
+  });
+}
+
+/* ── toast ── */
+let _tt;
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + type + ' show';
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.classList.remove('show'), 3400);
+}
+
+/* ── lightbox ── */
+function showImg(key) {
+  const src = screenshots[key];
+  if (!src) { toast('Screenshot only available in this session.', 'err'); return; }
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+window.showImg = showImg;
+
+/* ── XSS escape ── */
+function esc(s) {
+  return String(s||'').replace(/[&<>"']/g,
+    c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ── merchant wallet ── */
+function saveMWallet() {
+  const val = document.getElementById('mWalletInput').value.trim();
+  if (!val) { toast('Enter a wallet address.', 'err'); return; }
+  mWallet = val;
+  localStorage.setItem(SK_MWALLET, mWallet);
+  const inp = document.getElementById('mWalletInput');
+  inp.style.borderColor = '#2effd2';
+  refreshWalletBadge();
+  log('Merchant wallet saved: ' + mWallet.substring(0,20) + '…');
+  renderAll();
+}
+window.saveMWallet = saveMWallet;
+
+function refreshWalletBadge() {
+  document.getElementById('mWalletBadge').innerHTML = mWallet
+    ? '✅ ' + mWallet.substring(0,22) + '…'
+    : '⚙️ Wallet not set';
+  document.getElementById('mWalletBadge').style.color = mWallet ? '#2effd2' : '#64748b';
+}
+
+/* ── tick: timer transitions only — Firebase listener handles rendering ── */
+function tick() {
+  renderTimers();
+  const now = Date.now();
+  const updates = {};
+  const newLogs = [];
+
+  vaults.forEach(v => {
+    if (v.status === 'dual_confirmed' && v.releaseTime && now >= v.releaseTime) {
+      v.status = 'released';
+      updates['vaults/' + v.id] = { ...v };
+      newLogs.push('📋 [' + new Date().toLocaleTimeString() + '] ✅ RELEASED: ' + v.amount + ' ' + v.coin + ' → ' + v.buyerWallet.substring(0,14) + '…');
+    }
+    if (INCOMPLETE.includes(v.status) && v.lockTime && now >= v.lockTime + REFUND_MS) {
+      v.status = 'refunded';
+      updates['vaults/' + v.id] = { ...v };
+      newLogs.push('📋 [' + new Date().toLocaleTimeString() + '] ↩️ AUTO-REFUND: ' + v.amount + ' ' + v.coin + ' (30 min, incomplete confirmation).');
+    }
+  });
+
+  if (Object.keys(updates).length) {
+    db.ref('chat').once('value').then(snap => {
+      const current = snap.val() || [];
+      updates['chat'] = [...newLogs, ...current].slice(0, 120);
+      db.ref().update(updates);
+    });
+  }
+}
+
+/* ── step 2: merchant locks ── */
+function merchantLock(id) {
+  if (!mWallet) { toast('Save your merchant wallet first.', 'err'); return; }
+  const v = vaults.find(x => x.id === id);
+  if (!v || v.status !== 'pending') { toast('Request not found or already processed.', 'err'); return; }
+  v.status   = 'locked';
+  v.lockTime = Date.now();
+  db.ref('chat').once('value').then(snap => {
+    const current = snap.val() || [];
+    const entry = '📋 [' + new Date().toLocaleTimeString() + '] 🔒 Locked ' + v.amount + ' ' + v.coin + ' for ' + v.buyerWallet.substring(0,14) + '… — 30 min window started.';
+    db.ref().update({
+      ['vaults/' + v.id]: { ...v },
+      'chat': [entry, ...current].slice(0, 120)
+    });
+  });
+  toast('Vault locked! Buyer will be notified in real time.');
+}
+window.merchantLock = merchantLock;
+
+/* ── step 4: merchant uploads confirmation ── */
+function submitMerchantProof(id) {
+  const v = vaults.find(x => x.id === id);
+  if (!v || !['locked','buyer_proved'].includes(v.status)) { toast('Nothing to confirm here.', 'err'); return; }
+
+  const fileEl = document.getElementById('mss_' + id);
+  if (!fileEl || !fileEl.files || !fileEl.files.length) {
+    toast('Upload your MMG confirmation screenshot.', 'err'); return;
+  }
+  const file = fileEl.files[0];
+  if (file.size > 5 * 1024 * 1024) { toast('Image too large — max 5 MB.', 'err'); return; }
+
+  const r = new FileReader();
+  r.onload = function(e) {
+    screenshots[id + '_merchant'] = e.target.result;
+    v.merchantProofTime = Date.now();
+
+    let logMsg;
+    if (v.buyerProofTime) {
+      v.bothProofTime = Date.now();
+      v.releaseTime   = v.bothProofTime + RELEASE_MS;
+      v.status        = 'dual_confirmed';
+      logMsg = '✅ Both MMG screenshots in! ' + v.amount + ' ' + v.coin + ' releases in 30 min.';
+      toast('Both confirmed — crypto releases in 30 minutes.');
+    } else {
+      v.status = 'merchant_proved';
+      logMsg = '📥 Merchant confirmation uploaded for ' + v.amount + ' ' + v.coin + '. Waiting for buyer receipt.';
+      toast('Confirmation uploaded. Waiting for buyer to upload their receipt.');
+    }
+    db.ref('chat').once('value').then(snap => {
+      const current = snap.val() || [];
+      const entry = '📋 [' + new Date().toLocaleTimeString() + '] ' + logMsg;
+      db.ref().update({
+        ['vaults/' + v.id]: { ...v },
+        'chat': [entry, ...current].slice(0, 120)
+      });
+    });
+  };
+  r.readAsDataURL(file);
+}
+window.submitMerchantProof = submitMerchantProof;
+
+/* ── overrides ── */
+function forceRefund(id) {
+  if (!confirm('Cancel this trade and return the crypto to your wallet?')) return;
+  const v = vaults.find(x => x.id === id);
+  if (!v) return;
+  v.status = 'refunded';
+  db.ref('chat').once('value').then(snap => {
+    const current = snap.val() || [];
+    const entry = '📋 [' + new Date().toLocaleTimeString() + '] ↩️ Merchant cancelled trade — ' + v.amount + ' ' + v.coin + ' refunded.';
+    db.ref().update({
+      ['vaults/' + v.id]: { ...v },
+      'chat': [entry, ...current].slice(0, 120)
+    });
+  });
+}
+window.forceRefund = forceRefund;
+
+function forceRelease(id) {
+  if (!confirm('Release crypto to buyer immediately (skip 30‑min wait)?')) return;
+  const v = vaults.find(x => x.id === id);
+  if (!v) return;
+  v.status = 'released';
+  db.ref('chat').once('value').then(snap => {
+    const current = snap.val() || [];
+    const entry = '📋 [' + new Date().toLocaleTimeString() + '] 🎉 Merchant force-released ' + v.amount + ' ' + v.coin + ' to buyer immediately.';
+    db.ref().update({
+      ['vaults/' + v.id]: { ...v },
+      'chat': [entry, ...current].slice(0, 120)
+    });
+  });
+}
+window.forceRelease = forceRelease;
+
+/* ── proof chat widget ── */
+function proofChatHTML(v) {
+  const bKey = v.id + '_buyer';
+  const mKey = v.id + '_merchant';
+  const bImg = screenshots[bKey];
+  const mImg = screenshots[mKey];
+
+  return `<div class="proof-box">
+    <div class="proof-row">
+      <div class="proof-icon">👤</div>
+      <div class="proof-body">
+        <div class="proof-label ${v.buyerProofTime ? 'c-green' : 'c-mute'}">
+          Buyer — ${v.buyerProofTime ? '✓ receipt uploaded' : 'not uploaded yet'}
+        </div>
+        ${v.buyerMMGId ? `<div style="font-size:0.75rem;margin-top:2px;" class="c-mute">MMG ref: <b class="c-blue">${esc(v.buyerMMGId)}</b></div>` : ''}
+        ${bImg ? `<img src="${bImg}" class="proof-thumb" onclick="showImg('${esc(bKey)}')" title="Click to enlarge">` : (v.buyerProofTime ? '<div style="font-size:0.73rem;margin-top:4px;" class="c-mute"><i class="fas fa-info-circle"></i> Screenshot uploaded on buyer\'s device — check your MMG account to verify payment.</div>' : '')}
+      </div>
+    </div>
+    <div class="proof-row">
+      <div class="proof-icon">🏪</div>
+      <div class="proof-body">
+        <div class="proof-label ${v.merchantProofTime ? 'c-green' : 'c-mute'}">
+          You — ${v.merchantProofTime ? '✓ confirmation uploaded' : 'not uploaded yet'}
+        </div>
+        ${mImg ? `<img src="${mImg}" class="proof-thumb" onclick="showImg('${esc(mKey)}')" title="Click to enlarge">` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── timers ── */
+function renderTimers() {
+  document.querySelectorAll('[data-timer]').forEach(el => {
+    const [vid, kind] = el.dataset.timer.split('|');
+    const v = vaults.find(x => x.id === vid);
+    if (!v) return;
+    let rem = 0;
+    if (kind === 'release' && v.releaseTime) rem = Math.max(0, v.releaseTime - Date.now());
+    else if (kind === 'refund' && v.lockTime)  rem = Math.max(0, v.lockTime + REFUND_MS - Date.now());
+    else { el.textContent = '—'; return; }
+    if (!rem) { el.textContent = kind === 'release' ? 'Releasing…' : 'Refunding…'; return; }
+    const m = Math.floor(rem / 60000), s = Math.floor((rem % 60000) / 1000);
+    el.textContent = m + 'm ' + s + 's';
+  });
+}
+
+/* ── stats bar ── */
+function renderStats() {
+  const pending      = vaults.filter(v => v.status === 'pending').length;
+  const locked       = vaults.filter(v => v.status === 'locked').length;
+  const buyerProved  = vaults.filter(v => v.status === 'buyer_proved').length;
+  const dualConf     = vaults.filter(v => v.status === 'dual_confirmed').length;
+  const released     = vaults.filter(v => v.status === 'released').length;
+  const refunded     = vaults.filter(v => v.status === 'refunded').length;
+
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-num" style="color:#fbbf24;">${pending}</div>
+      <div class="stat-lbl">Pending lock</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:#4c9aff;">${locked + vaults.filter(v=>v.status==='merchant_proved').length}</div>
+      <div class="stat-lbl">Locked — waiting buyer</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:#2effd2;">${buyerProved}</div>
+      <div class="stat-lbl">Need your confirmation</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:#34d399;">${dualConf}</div>
+      <div class="stat-lbl">Both confirmed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:#2effd2;">${released}</div>
+      <div class="stat-lbl">Released</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:#f87171;">${refunded}</div>
+      <div class="stat-lbl">Refunded</div>
+    </div>`;
+}
+
+/* ── render pending (step 2) ── */
+function renderPending() {
+  const list = vaults.filter(v => v.status === 'pending');
+  const el   = document.getElementById('pendingList');
+  if (!list.length) { el.innerHTML = '<span class="empty-chip">No pending requests</span>'; return; }
+
+  el.innerHTML = list.map(v => `
+    <div class="vault-card" style="border-color:#4c9aff;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+        <span style="font-size:1rem;font-weight:700;">${esc(v.amount)} <span class="c-blue">${esc(v.coin)}</span></span>
+        <span class="badge">New request</span>
+      </div>
+      <div style="font-size:0.77rem;margin-bottom:10px;" class="c-mute">
+        <i class="fas fa-wallet"></i> ${esc(v.buyerWallet.substring(0,26))}…
+      </div>
+      ${!mWallet ? '<p style="font-size:0.78rem;margin-bottom:8px;" class="c-red"><i class="fas fa-exclamation-triangle"></i> Save your merchant wallet above before locking.</p>' : ''}
+      <button class="btn-glow full" onclick="merchantLock('${v.id}')" ${!mWallet ? 'disabled style="opacity:0.5;"' : ''}>
+        <i class="fas fa-lock"></i> Lock Crypto into Vault
+      </button>
+    </div>`).join('');
+}
+
+/* ── render active vaults (step 4 + locked + dual_confirmed) ── */
+function renderActive() {
+  const list = vaults.filter(v =>
+    ['locked','buyer_proved','merchant_proved','dual_confirmed'].includes(v.status)
+  );
+  const el = document.getElementById('activeList');
+  if (!list.length) { el.innerHTML = '<span class="empty-chip">No active vaults</span>'; return; }
+
+  el.innerHTML = list.map(v => {
+    const borderCol =
+      v.status === 'buyer_proved'   ? '#4c9aff' :
+      v.status === 'dual_confirmed' ? '#2effd2' :
+      v.status === 'merchant_proved' ? '#4c9aff' : '#1e2d4a';
+
+    let body = '';
+
+    if (v.status === 'locked') {
+      body = `
+        <p style="font-size:0.8rem;margin-bottom:8px;" class="c-mute">
+          <i class="fas fa-hourglass-half"></i> Buyer hasn't uploaded their MMG receipt yet.<br>
+          Auto-refund in: <b class="c-amber" data-timer="${v.id}|refund">…</b>
+        </p>
+        <p style="font-size:0.78rem;margin-bottom:8px;" class="c-mute">You can upload your confirmation now — vault completes when both are in.</p>
+        <span class="label">Upload your MMG confirmation screenshot (optional):</span>
+        <input id="mss_${v.id}" type="file" accept="image/*" style="width:100%;color:#94a3b8;font-size:0.8rem;margin-bottom:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-glow btn-sm" onclick="submitMerchantProof('${v.id}')"><i class="fas fa-upload"></i> Upload confirmation</button>
+          <button class="btn-danger btn-sm" onclick="forceRefund('${v.id}')"><i class="fas fa-undo"></i> Cancel &amp; refund</button>
+        </div>`;
+
+    } else if (v.status === 'buyer_proved') {
+      body = `
+        ${proofChatHTML(v)}
+        <span class="label" style="margin-top:10px;display:block;">Upload your MMG confirmation screenshot:</span>
+        <input id="mss_${v.id}" type="file" accept="image/*" style="width:100%;color:#94a3b8;font-size:0.8rem;margin-bottom:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-glow" style="flex:1;justify-content:center;" onclick="submitMerchantProof('${v.id}')">
+            <i class="fas fa-check-double"></i> Confirm MMG Payment
+          </button>
+          <button class="btn-danger" onclick="forceRefund('${v.id}')"><i class="fas fa-undo"></i> Refund</button>
+        </div>`;
+
+    } else if (v.status === 'merchant_proved') {
+      body = `
+        ${proofChatHTML(v)}
+        <p style="font-size:0.8rem;margin-top:8px;" class="c-mute">
+          Auto-refund if buyer doesn't upload in: <b class="c-amber" data-timer="${v.id}|refund">…</b>
+        </p>
+        <button class="btn-danger btn-sm" style="margin-top:8px;" onclick="forceRefund('${v.id}')"><i class="fas fa-undo"></i> Cancel &amp; refund</button>`;
+
+    } else {
+      // dual_confirmed
+      body = `
+        ${proofChatHTML(v)}
+        <p style="font-size:0.88rem;font-weight:700;margin-top:8px;" class="c-green">
+          <i class="fas fa-check-circle"></i> Crypto releases in: <span class="c-amber" data-timer="${v.id}|release">…</span>
+        </p>
+        <button class="btn-glow btn-sm" style="margin-top:8px;" onclick="forceRelease('${v.id}')">
+          <i class="fas fa-bolt"></i> Release now
+        </button>`;
+    }
+
+    return `<div class="vault-card" style="border-color:${borderCol};">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:6px;">
+        <span style="font-size:0.98rem;font-weight:700;">${esc(v.amount)} <span class="c-blue">${esc(v.coin)}</span></span>
+        <span class="badge" style="${v.status==='dual_confirmed'?'background:#051a0f;color:#2effd2;border:1px solid #2effd2;':v.status==='buyer_proved'?'background:#0d1a2e;color:#4c9aff;border:1px solid #4c9aff;':''}">${SL[v.status]||v.status}</span>
+      </div>
+      <div style="font-size:0.75rem;margin-bottom:6px;" class="c-mute">
+        <i class="fas fa-wallet"></i> ${esc(v.buyerWallet.substring(0,24))}…
+      </div>
+      ${body}
+    </div>`;
+  }).join('');
+}
+
+/* ── render history ── */
+function renderHistory() {
+  const list = vaults.filter(v => v.status === 'released' || v.status === 'refunded')
+                     .slice().reverse();
+  const el = document.getElementById('historyList');
+  if (!list.length) { el.innerHTML = '<span class="empty-chip">No completed trades yet</span>'; return; }
+
+  el.innerHTML = list.slice(0, 30).map(v => {
+    const isRel = v.status === 'released';
+    return `<div class="vault-card" style="border-color:${isRel ? '#2effd250' : '#7f1d1d50'};">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span style="font-size:0.9rem;font-weight:700;">${esc(v.amount)} <span class="c-blue">${esc(v.coin)}</span></span>
+        <span class="badge" style="${isRel ? 'color:#2effd2;' : 'color:#f87171;'}">${SL[v.status]}</span>
+      </div>
+      <div style="font-size:0.72rem;margin-top:3px;" class="c-mute">${esc(v.buyerWallet.substring(0,24))}…</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── render log ── */
+function renderLog() {
+  const el = document.getElementById('chatLog');
+  if (el) el.innerHTML = chatLines.map(l => `<div class="msg">${esc(l)}</div>`).join('');
+}
+
+/* ── render all ── */
+function renderAll() {
+  renderStats();
+  renderPending();
+  renderActive();
+  renderHistory();
+  renderLog();
+  refreshWalletBadge();
+  renderTimers();
+}
+
+/* ── clear all ── */
+function clearAll() {
+  if (!confirm('⚠️ Clear all vaults, chat log, and reset wallet? This cannot be undone.')) return;
+  localStorage.removeItem(SK_MWALLET);
+  mWallet = '';
+  screenshots = {};
+  document.getElementById('mWalletInput').value = '';
+  document.getElementById('mWalletInput').style.borderColor = '#2b3b6e';
+  db.ref().update({ vaults: null, chat: ['🟢 All data cleared.'] });
+  toast('All data cleared.');
+}
+window.clearAll = clearAll;
+
+/* ── real-time Firebase listeners — update state & re-render on all devices ── */
+db.ref('vaults').on('value', snap => {
+  const data = snap.val() || {};
+  vaults = Object.values(data);
+  renderStats();
+  renderPending();
+  renderActive();
+  renderHistory();
+  refreshWalletBadge();
+  renderTimers();
+});
+
+db.ref('chat').on('value', snap => {
+  chatLines = snap.val() || ['🟢 Dashboard ready. Save your wallet to start.'];
+  renderLog();
+});
+
+/* ── boot ── */
+mWallet = localStorage.getItem(SK_MWALLET) || '';
+document.getElementById('mWalletInput').value = mWallet;
+setInterval(tick, 1000);
+</script>
+</body>
+</html>

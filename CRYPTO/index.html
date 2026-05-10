@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>nosra-x · Buy Crypto | Guyana</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:radial-gradient(circle at 10% 20%,#0a0f1e,#03060c);color:#eef2ff;min-height:100vh;line-height:1.5;}
+    .wrap{max-width:640px;margin:0 auto;padding:0 1.2rem 4rem;}
+    .glass{background:rgba(15,25,45,0.65);backdrop-filter:blur(14px);border:1px solid rgba(0,255,255,0.18);border-radius:1.8rem;box-shadow:0 18px 32px -10px rgba(0,0,0,0.5);}
+    .btn-glow{background:linear-gradient(95deg,#00c6a7,#00b0f0);border:none;padding:0.9rem 1.6rem;border-radius:2.5rem;font-weight:700;color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-size:1rem;width:100%;}
+    .btn-glow:hover{transform:translateY(-2px);box-shadow:0 8px 22px -6px #00c6a770;}
+    .btn-ghost{background:transparent;border:1.5px solid #4c9aff;border-radius:2.5rem;padding:0.55rem 1.2rem;color:#caf0ff;cursor:pointer;font-size:0.85rem;display:inline-flex;align-items:center;gap:7px;}
+    .btn-ghost:hover{background:rgba(76,154,255,0.12);}
+    .field{width:100%;padding:11px 16px;border-radius:2rem;background:#0c1626;color:#fff;border:1.5px solid #2b3b6e;outline:none;font-size:0.92rem;font-family:inherit;transition:border-color 0.2s;}
+    .field:focus{border-color:#2effd2;}
+    select.field{cursor:pointer;}
+    .label{font-size:0.8rem;color:#64748b;display:block;margin-bottom:5px;}
+    .vault-card{background:#080f1e;border-radius:1.1rem;padding:1rem 1.1rem;margin-bottom:0.9rem;border:1px solid #1e2d4a;transition:border-color 0.2s;}
+    .badge{display:inline-block;background:#162035;color:#7ae9ff;border-radius:20px;padding:2px 11px;font-size:0.73rem;font-weight:700;}
+    .proof-box{background:#040c18;border-radius:10px;overflow:hidden;margin-top:9px;border:1px solid #1a2640;}
+    .proof-row{display:flex;gap:10px;padding:9px 12px;align-items:flex-start;border-bottom:1px solid #111d32;}
+    .proof-row:last-child{border-bottom:none;}
+    .proof-icon{font-size:1.15rem;flex-shrink:0;}
+    .proof-body{flex:1;min-width:0;}
+    .proof-label{font-size:0.78rem;font-weight:700;}
+    .c-green{color:#2effd2;} .c-blue{color:#7ae9ff;} .c-amber{color:#ffe484;} .c-mute{color:#64748b;} .c-red{color:#f87171;} .c-purple{color:#a78bfa;}
+    .proof-thumb{max-width:100%;max-height:120px;border-radius:8px;margin-top:6px;border:1px solid #1e2d4a;cursor:pointer;display:block;}
+    #lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out;}
+    #lightbox.open{display:flex;}
+    #lightbox img{max-width:92vw;max-height:92vh;border-radius:1rem;}
+    .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:1rem;font-weight:600;font-size:0.88rem;z-index:8888;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+    .toast.ok{background:#0a1f14;border:1.5px solid #2effd2;color:#2effd2;}
+    .toast.err{background:#200a0a;border:1.5px solid #f87171;color:#f87171;}
+    .toast.show{opacity:1;}
+    footer{text-align:center;font-size:0.8rem;color:#3a4a6a;padding:2rem 0;}
+    @media(max-width:480px){.btn-glow{font-size:0.92rem;}}
+  </style>
+</head>
+<body>
+
+<div id="lightbox" onclick="this.classList.remove('open')">
+  <img id="lbImg" src="" alt="">
+</div>
+<div id="toast" class="toast"></div>
+
+<div class="wrap">
+
+  <!-- ── Nav ── -->
+  <nav style="display:flex;justify-content:space-between;align-items:center;padding:1.6rem 0 2rem;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <i class="fas fa-cube" style="font-size:1.5rem;color:#2effd2;"></i>
+      <span style="font-weight:800;font-size:1.45rem;">nosra<span class="c-green">-x</span></span>
+    </div>
+    <a href="tel:+5926247890" class="btn-ghost"><i class="fas fa-headset"></i> Support</a>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <div class="glass" style="padding:2rem 1.8rem;text-align:center;margin-bottom:1.8rem;">
+    <div style="background:#0f172ad9;border-radius:40px;padding:0.3rem 1rem;display:inline-block;font-size:0.8rem;margin-bottom:1rem;">📍 Guyana · MMG Protected Vault</div>
+    <h1 style="font-size:2.6rem;font-weight:800;background:linear-gradient(135deg,#fff,#7ae9ff,#2effcf);background-clip:text;-webkit-background-clip:text;color:transparent;margin-bottom:0.6rem;line-height:1.15;">Buy Crypto<br>via MMG</h1>
+    <p style="color:#64748b;font-size:0.9rem;max-width:400px;margin:0 auto;">Crypto is locked in a vault. Pay via MMG, upload your receipt. Merchant confirms — coins arrive in 30 min.</p>
+  </div>
+
+  <!-- ── How it works ── -->
+  <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-bottom:2rem;">
+    <span style="background:#060e1c;border:1px solid #2effd2;border-radius:8px;padding:4px 10px;font-size:0.75rem;" class="c-green">① Request</span>
+    <span class="c-mute" style="align-self:center;">›</span>
+    <span style="background:#060e1c;border:1px solid #4c9aff;border-radius:8px;padding:4px 10px;font-size:0.75rem;" class="c-blue">② Merchant locks</span>
+    <span class="c-mute" style="align-self:center;">›</span>
+    <span style="background:#060e1c;border:1px solid #2effd2;border-radius:8px;padding:4px 10px;font-size:0.75rem;" class="c-green">③ Pay MMG + upload receipt</span>
+    <span class="c-mute" style="align-self:center;">›</span>
+    <span style="background:#060e1c;border:1px solid #4c9aff;border-radius:8px;padding:4px 10px;font-size:0.75rem;" class="c-blue">④ Merchant confirms</span>
+    <span class="c-mute" style="align-self:center;">›</span>
+    <span style="background:#060e1c;border:1px solid #ffe484;border-radius:8px;padding:4px 10px;font-size:0.75rem;" class="c-amber">⑤ Coins in 30 min</span>
+  </div>
+
+  <!-- ── Request form ── -->
+  <div class="glass" style="padding:1.8rem;margin-bottom:1.8rem;">
+    <h2 style="font-size:1.15rem;font-weight:700;margin-bottom:1.3rem;" class="c-green"><i class="fas fa-shopping-cart"></i> New Buy Request</h2>
+
+    <span class="label">Your crypto wallet address <span style="color:#475569;">(coins will be sent here)</span></span>
+    <input id="fWallet" type="text" placeholder="e.g. 0x1a2b… or bc1q…" class="field" style="margin-bottom:14px;">
+
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <div style="flex:2;">
+        <span class="label">Amount</span>
+        <input id="fAmount" type="number" placeholder="0.00" class="field" min="0" step="any">
+      </div>
+      <div style="flex:1;">
+        <span class="label">Coin</span>
+        <select id="fCoin" class="field">
+          <option>BTC</option><option>ETH</option><option>USDT</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-glow" onclick="createRequest()">
+      <i class="fas fa-paper-plane"></i> Submit Buy Request
+    </button>
+  </div>
+
+  <!-- ── My requests ── -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+    <h2 style="font-size:1.1rem;font-weight:700;">My Requests</h2>
+    <button class="btn-ghost" onclick="toggleLookup()" style="font-size:0.78rem;padding:5px 12px;">
+      <i class="fas fa-search"></i> Look up wallet
+    </button>
+  </div>
+
+  <div id="lookupBox" style="display:none;margin-bottom:1rem;">
+    <div style="display:flex;gap:8px;">
+      <input id="lookupInput" type="text" placeholder="Enter any wallet address" class="field" style="flex:1;">
+      <button class="btn-ghost" onclick="applyLookup()">Go</button>
+    </div>
+  </div>
+
+  <div id="vaultList"><p class="c-mute" style="font-size:0.88rem;">Submit a request above to track your orders.</p></div>
+
+  <!-- ── Contact ── -->
+  <div class="glass" style="padding:1.4rem;text-align:center;margin-top:2rem;">
+    <p class="c-mute" style="font-size:0.82rem;margin-bottom:0.7rem;">Need help with your order?</p>
+    <div style="display:flex;justify-content:center;gap:1.4rem;flex-wrap:wrap;font-size:0.88rem;">
+      <a href="tel:+5926247890"                       style="color:#2effd2;text-decoration:none;"><i class="fas fa-phone-alt"></i> +592 624 7890</a>
+      <a href="https://t.me/nosraX_support" target="_blank" style="color:#7ae9ff;text-decoration:none;"><i class="fab fa-telegram"></i> Telegram</a>
+      <a href="https://wa.me/5926247890"    target="_blank" style="color:#25d366;text-decoration:none;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+    </div>
+  </div>
+
+  <footer>© 2025 nosra-x · Vault protected · Auto-refund if incomplete in 30 min</footer>
+</div>
+
+<script>
+'use strict';
+
+/* ── Firebase init ── */
+firebase.initializeApp(window.FIREBASE_CONFIG);
+const db = firebase.database();
+const SK_BW      = 'nx_buyer_wallet';  // stays local — device preference only
+const RELEASE_MS = 30 * 60 * 1000;
+const REFUND_MS  = 30 * 60 * 1000;
+const INCOMPLETE = ['locked','buyer_proved','merchant_proved'];
+
+const SL = {
+  pending:         '⏳ Awaiting lock',
+  locked:          '🔒 Action needed',
+  buyer_proved:    '📤 Receipt sent',
+  merchant_proved: '📥 Upload yours!',
+  dual_confirmed:  '✅ Releasing soon',
+  released:        '🎉 Released',
+  refunded:        '↩️ Refunded'
+};
+
+/* ── state ── */
+let vaults      = [];
+let screenshots = {};   // id+'_buyer' | id+'_merchant' → base64, memory only
+let myWallet    = localStorage.getItem(SK_BW) || '';
+
+/* ── Firebase write helpers ── */
+function saveVault(v) {
+  db.ref('vaults/' + v.id).set(v);
+}
+
+/* ── toast ── */
+let _toastT;
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + type + ' show';
+  clearTimeout(_toastT);
+  _toastT = setTimeout(() => el.classList.remove('show'), 3400);
+}
+
+/* ── lightbox ── */
+function showImg(key) {
+  const src = screenshots[key];
+  if (!src) { toast('Screenshot only available in this session — reload to re-upload.', 'err'); return; }
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+window.showImg = showImg;
+
+/* ── XSS escape ── */
+function esc(s) {
+  return String(s||'').replace(/[&<>"']/g,
+    c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ── wallet lookup ── */
+function toggleLookup() {
+  const b = document.getElementById('lookupBox');
+  b.style.display = b.style.display === 'none' ? 'block' : 'none';
+}
+function applyLookup() {
+  const w = document.getElementById('lookupInput').value.trim();
+  if (!w) { toast('Enter a wallet address.', 'err'); return; }
+  myWallet = w;
+  localStorage.setItem(SK_BW, w);
+  document.getElementById('lookupBox').style.display = 'none';
+  renderList();
+}
+window.toggleLookup = toggleLookup;
+window.applyLookup  = applyLookup;
+
+/* ── tick: only handles timer transitions, Firebase listener handles rendering ── */
+function tick() {
+  renderTimers();
+  const now = Date.now();
+  const updates = {};
+  const newLogs = [];
+
+  vaults.forEach(v => {
+    if (v.status === 'dual_confirmed' && v.releaseTime && now >= v.releaseTime) {
+      v.status = 'released';
+      updates['vaults/' + v.id] = { ...v };
+      newLogs.push('📋 [' + new Date().toLocaleTimeString() + '] ✅ RELEASED: ' + v.amount + ' ' + v.coin + ' → ' + v.buyerWallet.substring(0,14) + '…');
+    }
+    if (INCOMPLETE.includes(v.status) && v.lockTime && now >= v.lockTime + REFUND_MS) {
+      v.status = 'refunded';
+      updates['vaults/' + v.id] = { ...v };
+      newLogs.push('📋 [' + new Date().toLocaleTimeString() + '] ↩️ AUTO-REFUND: ' + v.amount + ' ' + v.coin + ' returned to merchant.');
+    }
+  });
+
+  if (Object.keys(updates).length) {
+    // Fetch current chat, prepend new entries, write everything atomically
+    db.ref('chat').once('value').then(snap => {
+      const current = snap.val() || [];
+      updates['chat'] = [...newLogs, ...current].slice(0, 120);
+      db.ref().update(updates);
+    });
+  }
+}
+
+/* ── step 1: create request ── */
+function createRequest() {
+  const wallet = document.getElementById('fWallet').value.trim();
+  const amtRaw = document.getElementById('fAmount').value;
+  const amount = parseFloat(amtRaw);
+  const coin   = document.getElementById('fCoin').value;
+
+  if (!wallet)                              { toast('Enter your wallet address.', 'err'); return; }
+  if (!amtRaw || isNaN(amount) || amount <= 0) { toast('Enter a valid amount.', 'err'); return; }
+
+  const id = 'v_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+  const newVault = {
+    id, buyerWallet: wallet,
+    amount: amount.toFixed(6), coin,
+    status: 'pending',
+    lockTime: null, releaseTime: null,
+    buyerMMGId: null,
+    buyerProofTime: null, merchantProofTime: null, bothProofTime: null
+  };
+  db.ref('vaults/' + id).set(newVault); // Firebase listener re-renders all devices
+
+  myWallet = wallet;
+  localStorage.setItem(SK_BW, wallet);   // local preference only
+  document.getElementById('fAmount').value = '';
+  toast('Request submitted! Merchant will lock your crypto shortly.');
+}
+
+/* ── step 3: buyer uploads MMG receipt ── */
+function submitBuyerProof(id) {
+  const v = vaults.find(x => x.id === id);
+  if (!v || v.buyerWallet.toLowerCase() !== myWallet.toLowerCase()) return;
+  if (!['locked','merchant_proved'].includes(v.status)) return;
+
+  const mmgEl  = document.getElementById('bmmg_' + id);
+  const fileEl = document.getElementById('bss_'  + id);
+  const mmgId  = mmgEl ? mmgEl.value.trim() : '';
+
+  if (!mmgId && (!fileEl || !fileEl.files || !fileEl.files.length)) {
+    toast('Enter your MMG reference number or upload a screenshot (or both).', 'err'); return;
+  }
+
+  function finalize(imgData) {
+    v.buyerMMGId     = mmgId || null;
+    v.buyerProofTime = Date.now();
+    if (imgData) screenshots[id + '_buyer'] = imgData;
+
+    if (v.merchantProofTime) {
+      v.bothProofTime = Date.now();
+      v.releaseTime   = v.bothProofTime + RELEASE_MS;
+      v.status        = 'dual_confirmed';
+      toast('Both confirmed! Crypto releases in 30 minutes.');
+    } else {
+      v.status = 'buyer_proved';
+      toast('Receipt uploaded. Waiting for merchant to confirm.');
+    }
+    saveVault(v); // Firebase listener re-renders all devices
+  }
+
+  if (fileEl && fileEl.files && fileEl.files.length) {
+    const file = fileEl.files[0];
+    if (file.size > 5 * 1024 * 1024) { toast('Image too large — max 5 MB.', 'err'); return; }
+    const r = new FileReader();
+    r.onload = e => finalize(e.target.result);
+    r.readAsDataURL(file);
+  } else {
+    finalize(null);
+  }
+}
+window.submitBuyerProof = submitBuyerProof;
+
+/* ── proof chat widget ── */
+function proofChatHTML(v) {
+  const bKey = v.id + '_buyer';
+  const mKey = v.id + '_merchant';
+  const bImg = screenshots[bKey];
+  const mImg = screenshots[mKey];
+
+  return `<div class="proof-box">
+    <div class="proof-row">
+      <div class="proof-icon">👤</div>
+      <div class="proof-body">
+        <div class="proof-label ${v.buyerProofTime ? 'c-green' : 'c-mute'}">
+          You — ${v.buyerProofTime ? '✓ receipt uploaded' : 'not uploaded yet'}
+        </div>
+        ${v.buyerMMGId ? `<div style="font-size:0.77rem;color:#94a3b8;margin-top:2px;">MMG ref: <b class="c-blue">${esc(v.buyerMMGId)}</b></div>` : ''}
+        ${bImg ? `<img src="${bImg}" class="proof-thumb" onclick="showImg('${esc(bKey)}')" title="Click to enlarge">` : ''}
+      </div>
+    </div>
+    <div class="proof-row">
+      <div class="proof-icon">🏪</div>
+      <div class="proof-body">
+        <div class="proof-label ${v.merchantProofTime ? 'c-green' : 'c-mute'}">
+          Merchant — ${v.merchantProofTime ? '✓ confirmed' : 'waiting to confirm'}
+        </div>
+        ${mImg ? `<img src="${mImg}" class="proof-thumb" onclick="showImg('${esc(mKey)}')" title="Click to enlarge">` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── timers ── */
+function renderTimers() {
+  document.querySelectorAll('[data-timer]').forEach(el => {
+    const [vid, kind] = el.dataset.timer.split('|');
+    const v = vaults.find(x => x.id === vid);
+    if (!v) return;
+    let rem = 0;
+    if (kind === 'release' && v.releaseTime) rem = Math.max(0, v.releaseTime - Date.now());
+    else if (kind === 'refund' && v.lockTime)  rem = Math.max(0, v.lockTime + REFUND_MS - Date.now());
+    else { el.textContent = '—'; return; }
+    if (!rem) { el.textContent = kind === 'release' ? 'Releasing…' : 'Refunding…'; return; }
+    const m = Math.floor(rem / 60000), s = Math.floor((rem % 60000) / 1000);
+    el.textContent = m + 'm ' + s + 's';
+  });
+}
+
+/* ── render vault list ── */
+function renderList() {
+  const el = document.getElementById('vaultList');
+  if (!myWallet) {
+    el.innerHTML = '<p class="c-mute" style="font-size:0.88rem;">Submit a request above to track your orders.</p>';
+    return;
+  }
+
+  const mine = vaults.filter(v => v.buyerWallet.toLowerCase() === myWallet.toLowerCase());
+  if (!mine.length) {
+    el.innerHTML = `<p class="c-mute" style="font-size:0.88rem;">No requests found for <b>${esc(myWallet.substring(0,22))}…</b></p>`;
+    return;
+  }
+
+  el.innerHTML = mine.slice().reverse().map(v => {
+    const needsAction = v.status === 'locked' || v.status === 'merchant_proved';
+    const borderCol   = needsAction ? '#2effd2' : v.status === 'released' ? '#2effd250' : v.status === 'refunded' ? '#7f1d1d' : '#1e2d4a';
+    let inner = '';
+
+    if (v.status === 'pending') {
+      inner = `<p style="font-size:0.86rem;margin-top:8px;" class="c-amber"><i class="fas fa-hourglass-half"></i> Waiting for merchant to lock crypto into the vault…</p>`;
+
+    } else if (needsAction) {
+      const urgentNote = v.status === 'merchant_proved'
+        ? `<p style="font-size:0.82rem;margin-bottom:8px;font-weight:700;" class="c-blue"><i class="fas fa-bolt"></i> Merchant already confirmed — upload your receipt now to complete!</p>`
+        : '';
+      inner = `
+        <div style="background:#050f0a;border:1px solid #2effd2;border-radius:10px;padding:12px;margin-top:10px;">
+          <p style="font-weight:700;margin-bottom:5px;" class="c-green"><i class="fas fa-exclamation-circle"></i> Your turn — pay via MMG then upload receipt</p>
+          ${urgentNote}
+          <p style="font-size:0.8rem;margin-bottom:10px;" class="c-mute">⏰ Auto-refund if not completed within: <b class="c-amber" data-timer="${v.id}|refund">…</b></p>
+          <span class="label">MMG reference / transaction number <span style="color:#334155;">(optional)</span></span>
+          <input id="bmmg_${v.id}" type="text" placeholder="e.g. GY-20250509-00123" class="field" style="margin-bottom:10px;">
+          <span class="label">Screenshot of your MMG payment receipt</span>
+          <input id="bss_${v.id}" type="file" accept="image/*" style="width:100%;color:#94a3b8;font-size:0.82rem;margin-bottom:12px;">
+          <button class="btn-glow" onclick="submitBuyerProof('${v.id}')">
+            <i class="fas fa-mobile-alt"></i> Upload MMG Receipt
+          </button>
+        </div>
+        ${proofChatHTML(v)}`;
+
+    } else if (v.status === 'buyer_proved') {
+      inner = `
+        <p style="font-size:0.86rem;margin-top:8px;" class="c-purple">✔ Receipt uploaded${v.buyerMMGId ? ` — MMG ref: <b class="c-blue">${esc(v.buyerMMGId)}</b>` : ''}.</p>
+        <p style="font-size:0.8rem;margin-top:4px;" class="c-mute">⏰ Auto-refund if merchant doesn't confirm in: <b class="c-amber" data-timer="${v.id}|refund">…</b></p>
+        ${proofChatHTML(v)}`;
+
+    } else if (v.status === 'dual_confirmed') {
+      inner = `
+        <p style="font-size:0.9rem;font-weight:700;margin-top:8px;" class="c-green"><i class="fas fa-check-circle"></i> Both confirmed! Crypto releases in: <span class="c-amber" data-timer="${v.id}|release">…</span></p>
+        ${proofChatHTML(v)}`;
+
+    } else if (v.status === 'released') {
+      inner = `<p style="font-size:1rem;font-weight:700;margin-top:8px;" class="c-green">🎉 Coins sent to your wallet!</p>`;
+
+    } else if (v.status === 'refunded') {
+      inner = `<p style="font-size:0.86rem;margin-top:8px;" class="c-red">Trade cancelled — 30‑min window expired without both confirmations. Crypto returned to merchant.<br><span style="font-size:0.8rem;">Contact support if you paid.</span></p>`;
+    }
+
+    return `<div class="vault-card" style="border-color:${borderCol};">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span style="font-size:1.05rem;font-weight:700;">${esc(v.amount)} <span class="c-blue">${esc(v.coin)}</span></span>
+        <span class="badge" style="${needsAction ? 'background:#051a0f;color:#2effd2;border:1px solid #2effd2;' : ''}">${SL[v.status]||v.status}</span>
+      </div>
+      <div style="font-size:0.73rem;margin-top:2px;" class="c-mute">ID: ${esc(v.id)}</div>
+      ${inner}
+    </div>`;
+  }).join('');
+
+  renderTimers();
+}
+
+/* ── real-time Firebase listener — updates vaults & re-renders on all devices ── */
+db.ref('vaults').on('value', snap => {
+  const data = snap.val() || {};
+  vaults = Object.values(data);
+  renderList();
+});
+
+/* ── boot ── */
+if (myWallet) document.getElementById('fWallet').value = myWallet;
+setInterval(tick, 1000);
+</script>
+</body>
+</html>
